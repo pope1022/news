@@ -26,11 +26,9 @@ public class Product {
     private Integer salesCount;  // 销量
     
     private Integer status;      // 0: 下架, 1: 上架
-    
-    @TableField(fill = FieldFill.INSERT)
+
     private LocalDateTime createTime;
-    
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+
     private LocalDateTime updateTime;
     
     @TableLogic

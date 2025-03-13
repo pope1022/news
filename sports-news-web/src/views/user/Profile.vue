@@ -205,6 +205,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import { updateProfile, changePassword } from '@/api/user'
+import { getAddressList, addAddress, updateAddress, deleteAddress } from '@/api/address'
 
 const userStore = useUserStore()
 
@@ -313,6 +314,8 @@ const passwordRules = {
 
 // 方法
 const handleEditProfile = () => {
+  console.log(userStore);
+  
   profileForm.nickname = userStore.userInfo.nickname
   profileForm.email = userStore.userInfo.email
   profileForm.phone = userStore.userInfo.phone
@@ -364,7 +367,23 @@ const submitAddress = async () => {
     if (valid) {
       try {
         addressSubmitting.value = true
-        // TODO: 调用地址保存接口
+        const addressData = {
+          id: addressForm.id || undefined,
+          receiver: addressForm.receiver,
+          phone: addressForm.phone,
+          province: addressForm.region[0],
+          city: addressForm.region[1],
+          district: addressForm.region[2],
+          detail: addressForm.detail,
+          isDefault: addressForm.isDefault ? 1 : 0
+        }
+        
+        if (addressForm.id) {
+          await updateAddress(addressData)
+        } else {
+          await addAddress(addressData)
+        }
+        
         ElMessage.success(addressForm.id ? '地址修改成功' : '地址添加成功')
         addressDialogVisible.value = false
         loadAddressList()
@@ -382,17 +401,22 @@ const handleDeleteAddress = async (id: number) => {
     await ElMessageBox.confirm('确定要删除该地址吗？', '提示', {
       type: 'warning'
     })
-    // TODO: 调用地址删除接口
+    await deleteAddress(id)
     ElMessage.success('地址删除成功')
     loadAddressList()
   } catch (error) {
-    // 用户取消删除
+    if (error !== 'cancel') {
+      ElMessage.error('删除失败')
+    }
   }
 }
 
 const handleSetDefault = async (id: number) => {
   try {
-    // TODO: 调用设置默认地址接口
+    await updateAddress({
+      id,
+      isDefault: 1
+    })
     ElMessage.success('设置默认地址成功')
     loadAddressList()
   } catch (error: any) {
@@ -424,8 +448,8 @@ const submitPassword = async () => {
 
 const loadAddressList = async () => {
   try {
-    // TODO: 调用获取地址列表接口
-    addressList.value = []
+    const res = await getAddressList()
+    addressList.value = res
   } catch (error: any) {
     ElMessage.error(error.message || '获取地址列表失败')
   }

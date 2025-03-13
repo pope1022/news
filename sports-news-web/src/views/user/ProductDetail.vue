@@ -198,7 +198,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance } from 'element-plus'
-import { getProductDetail } from '@/api/product'
+import { getProductById } from '@/api/product'
 import { getAddressList, addAddress, updateAddress, deleteAddress } from '@/api/address'
 import { createOrder } from '@/api/order'
 import { addToCart } from '@/api/cart'
@@ -270,7 +270,7 @@ const pointsMessage = computed(() => {
 const loadProduct = async () => {
   loading.value = true
   try {
-    product.value = await getProductDetail(route.params.id as string)
+    product.value = await getProductById(route.params.id as string)
   } catch (error: any) {
     ElMessage.error(error.message || '获取商品详情失败')
     router.push('/products')

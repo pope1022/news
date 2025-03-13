@@ -117,8 +117,8 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { View, ChatDotRound, Timer } from '@element-plus/icons-vue'
-import { getNewsDetail } from '@/api/news'
-import { getComments, addComment, deleteComment } from '@/api/comment'
+import { getNewsById } from '@/api/news'
+import { getComments, createComment, deleteComment } from '@/api/comment'
 import { getAllCategories } from '@/api/category'
 import { useUserStore } from '@/stores/user'
 import { formatDate } from '@/utils/format'
@@ -140,7 +140,7 @@ const size = ref(10)
 const loadNewsDetail = async () => {
   loading.value = true
   try {
-    news.value = await getNewsDetail(route.params.id as string)
+    news.value = await getNewsById(route.params.id as string)
   } catch (error: any) {
     ElMessage.error(error.message || '获取新闻详情失败')
     router.push('/news')
@@ -186,7 +186,7 @@ const handleSubmitComment = async () => {
   }
 
   try {
-    await addComment({
+    await createComment({
       newsId: route.params.id as string,
       content: commentContent.value.trim()
     })
@@ -290,8 +290,7 @@ onMounted(async () => {
 }
 
 .news-cover :deep(.el-image) {
-  width: 100%;
-  max-height: 400px;
+  width: 100%; 
 }
 
 .news-body {

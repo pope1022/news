@@ -193,7 +193,7 @@ public class AdminController {
         return Result.success(productService.createProduct(product));
     }
 
-    @PutMapping("/products")
+    @PutMapping("/products/{id}")
     public Result<Void> updateProduct(@RequestBody Product product) {
         productService.updateProduct(product);
         return Result.success();
@@ -202,6 +202,20 @@ public class AdminController {
     @DeleteMapping("/products/{id}")
     public Result<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
+        return Result.success();
+    }
+
+    @PutMapping("/products/{id}/status")
+    public Result<Void> updateProductStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, Integer> requestBody) {
+        Integer status = requestBody.get("status");
+
+        if (status == 0) {
+            productService.enableUser(id);
+        } else {
+            productService.disableUser(id);
+        }
         return Result.success();
     }
 

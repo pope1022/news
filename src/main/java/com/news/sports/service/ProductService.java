@@ -21,7 +21,11 @@ public interface ProductService {
     void putOnSale(Long id);
     
     void takeOffSale(Long id);
-    
+
+    void enableUser(Long userId);
+
+    void disableUser(Long userId);
+
     boolean checkStock(Long id, Integer quantity);
     
     Page<Product> getHotProducts(Integer page, Integer size);

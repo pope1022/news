@@ -3,6 +3,7 @@ package com.news.sports.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.news.sports.entity.Product;
+import com.news.sports.entity.User;
 import com.news.sports.mapper.ProductMapper;
 import com.news.sports.service.ProductService;
 import org.springframework.stereotype.Service;
@@ -107,5 +108,27 @@ public class ProductServiceImpl implements ProductService {
                 .orderByDesc(Product::getSalesCount)
                 .orderByDesc(Product::getCreateTime);
         return productMapper.selectPage(new Page<>(page, size), wrapper);
+    }
+
+    @Override
+    @Transactional
+    public void enableUser(Long produceId) {
+        Product produce = productMapper.selectById(produceId);
+        if (produce == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        produce.setStatus(0);
+        productMapper.updateById(produce);
+    }
+
+    @Override
+    @Transactional
+    public void disableUser(Long produceId) {
+        Product produce = productMapper.selectById(produceId);
+        if (produce == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        produce.setStatus(1);
+        productMapper.updateById(produce);
     }
 } 

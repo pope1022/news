@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '../utils/request'
 
 export interface OrderQuery {
   page: number
@@ -6,9 +6,9 @@ export interface OrderQuery {
   keyword?: string
 }
 
-export const createOrder = (data: any) => {
+export const createOrder = (data: CreateOrderParams) => {
   return request({
-    url: '/orders',
+    url: '/api/orders',
     method: 'post',
     data
   })
@@ -23,7 +23,7 @@ export const getOrderById = (id: number) => {
 
 export const getOrderByOrderNo = (orderNo: string) => {
   return request({
-    url: `/orders/no/${orderNo}`,
+    url: `/api/orders/no/${orderNo}`,
     method: 'get'
   })
 }
@@ -46,14 +46,14 @@ export const getAllOrders = (params: OrderQuery) => {
 
 export const payOrder = (orderNo: string) => {
   return request({
-    url: `/orders/${orderNo}/pay`,
+    url: `/api/orders/${orderNo}/pay`,
     method: 'post'
   })
 }
 
 export const cancelOrder = (orderNo: string) => {
   return request({
-    url: `/orders/${orderNo}/cancel`,
+    url: `/api/orders/${orderNo}/cancel`,
     method: 'post'
   })
 }
@@ -68,7 +68,7 @@ export const deliverOrder = (orderNo: string, expressNo: string, expressCompany:
 
 export const completeOrder = (orderNo: string) => {
   return request({
-    url: `/orders/${orderNo}/complete`,
+    url: `/api/orders/${orderNo}/complete`,
     method: 'post'
   })
 }
@@ -78,4 +78,17 @@ export const refundOrder = (orderNo: string) => {
     url: `/orders/${orderNo}/refund`,
     method: 'post'
   })
+}
+
+export interface CreateOrderParams {
+  productId: number
+  quantity: number
+  addressId: number
+}
+
+export interface OrderQueryParams {
+  page?: number
+  size?: number
+  status?: number
+  keyword?: string
 } 

@@ -29,21 +29,24 @@
         stripe
         style="width: 100%"
       >
-        <el-table-column width="100">
+        <el-table-column prop="id" label="ID" width="100" align="center" />
+        <el-table-column label="封面" width="100" align="center" >
           <template #default="{ row }">
             <el-image
-              :src="row.imageUrl"
-              :preview-src-list="[row.imageUrl]"
+              :src="row.coverImage"
+              :preview-src-list="[row.coverImage]"
               fit="cover"
               class="product-image"
             />
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="商品名称" show-overflow-tooltip />
+        <el-table-column prop="name" label="商品名称" width="200"  align="center" show-overflow-tooltip />
+        <el-table-column prop="price" label="商品价值" width="100" align="center" />
         <el-table-column prop="points" label="所需积分" width="100" align="center" />
         <el-table-column prop="stock" label="库存" width="100" align="center" />
-        <el-table-column prop="sales" label="销量" width="100" align="center" />
+        <el-table-column prop="salesCount" label="销量" width="100" align="center" />
         <el-table-column prop="createTime" label="创建时间" width="180" />
+        <el-table-column prop="updateTime" label="修改时间" width="180" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
             <el-switch
@@ -102,20 +105,23 @@
         <el-form-item label="商品名称" prop="name">
           <el-input v-model="form.name" />
         </el-form-item>
-        <el-form-item label="商品图片" prop="imageUrl">
+        <el-form-item label="商品图片" prop="coverImage">
           <el-upload
             class="product-uploader"
-            action="/api/upload"
+            action="/api/admin/upload"
             :show-file-list="false"
             :on-success="handleImageSuccess"
             :before-upload="beforeImageUpload"
           >
-            <img v-if="form.imageUrl" :src="form.imageUrl" class="product-image" />
+            <img v-if="form.coverImage" :src="form.coverImage" class="product-image" />
             <el-icon v-else class="product-uploader-icon"><Plus /></el-icon>
           </el-upload>
         </el-form-item>
         <el-form-item label="所需积分" prop="points">
           <el-input-number v-model="form.points" :min="0" />
+        </el-form-item>
+        <el-form-item label="价格" prop="price">
+          <el-input-number v-model="form.price" :min="0" />
         </el-form-item>
         <el-form-item label="库存" prop="stock">
           <el-input-number v-model="form.stock" :min="0" />
@@ -170,8 +176,9 @@ const searchForm = reactive({
 const form = reactive({
   id: '',
   name: '',
-  imageUrl: '',
+  coverImage: '',
   points: 0,
+  price: 0,
   stock: 0,
   description: '',
   status: 1
@@ -182,8 +189,11 @@ const rules = {
     { required: true, message: '请输入商品名称', trigger: 'blur' },
     { min: 2, max: 100, message: '长度在 2 到 100 个字符', trigger: 'blur' }
   ],
-  imageUrl: [
+  coverImage: [
     { required: true, message: '请上传商品图片', trigger: 'change' }
+  ],
+  price: [
+    { required: true, message: '请输入商品价格', trigger: 'blur' }
   ],
   points: [
     { required: true, message: '请输入所需积分', trigger: 'blur' }
@@ -205,7 +215,7 @@ const loadProductList = async () => {
     )
     const data = await response.json()
     if (data.code === 200) {
-      productList.value = data.data.list
+      productList.value = data.data.records
       total.value = data.data.total
     }
   } catch (error) {
@@ -235,8 +245,9 @@ const handleAdd = () => {
   Object.assign(form, {
     id: '',
     name: '',
-    imageUrl: '',
+    coverImage: '',
     points: 0,
+    price: 0,
     stock: 0,
     description: '',
     status: 1
@@ -294,7 +305,7 @@ const handleImageSuccess: UploadProps['onSuccess'] = (
   response,
   uploadFile
 ) => {
-  form.imageUrl = response.data.url
+  form.coverImage = response.data.url
 }
 
 const beforeImageUpload: UploadProps['beforeUpload'] = (file) => {
